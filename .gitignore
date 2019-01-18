@@ -1,0 +1,15 @@
+Code/*
+Thunar/*
+dconf/*
+fish/config*
+fish/fishd*
+gcloud/*
+mimeapps.list
+pulse/*
+user-dirs.dirs
+user-dirs.locale
+xfce4/*
+
+nvim/plugged/
+nvim/autoload/plug.vim
+nvim/.netrwhist
