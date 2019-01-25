@@ -253,9 +253,6 @@ call plug#begin('~/.config/nvim/plugged')
     " remap esc
     inoremap jj <esc>
 
-    " shortcut to save
-    nmap <leader>, :w<cr>
-
     " set paste toggle
     set pastetoggle=<leader>v
 
@@ -317,6 +314,7 @@ call plug#begin('~/.config/nvim/plugged')
     augroup configgroup
         autocmd!
 
+        " close help file with q
         autocmd FileType help nnoremap <buffer> q :q<CR>
         " jump to the last position when reopening a file
         autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -344,7 +342,6 @@ call plug#begin('~/.config/nvim/plugged')
 " }}}
 
 " General Functionality {{{
-
     " align => ga
     Plug 'junegunn/vim-easy-align'
 
@@ -669,7 +666,7 @@ call plug#begin('~/.config/nvim/plugged')
         let g:VM_maps['Find Under']         = '<C-d>'
         let g:VM_maps['Find Subword Under'] = '<C-d>'
         let g:VM_maps["Visual Cursors"]     = '<leader><leader>c'
-        et g:VM_theme = 'iceblue'
+        let g:VM_theme = 'iceblue'
         imap <C-Up> <Esc><C-Up>i
         imap <C-Down> <Esc><C-Down>i
     " }}}
@@ -757,7 +754,7 @@ call plug#begin('~/.config/nvim/plugged')
         Plug 'elzr/vim-json', { 'for': 'json' }
         let g:vim_json_syntax_conceal = 0
     " }}}
-    
+
     " Python {{{
         Plug 'Vimjas/vim-python-pep8-indent', { 'for': 'py' }
         Plug 'python-rope/rope', { 'for': 'py' }
@@ -799,148 +796,149 @@ call plug#end()
     highlight xmlAttrib cterm=italic term=italic gui=italic
     " highlight Type cterm=italic term=italic gui=italic
     highlight Normal ctermbg=none
+
+
+    " Fix nerdtree bug
+    if exists("g:loaded_webdevicons")
+      call webdevicons#refresh()
+    endif
 " }}}
 
 " {{{
-" Needed for tmux and vim to play nice with arrows
-" if &term =~ '^screen'
-"   execute "set <xUp>=\e[1;*A"
-"   execute "set <xDown>=\e[1;*B"
-"   execute "set <xRight>=\e[1;*C"
-"   execute "set <xLeft>=\e[1;*D"
-"   execute "set <F11>=\e[23;*~"
-"   execute "set <F12>=\e[24;*~"
-" endif
-" nnoremap <C-S-F12> :echo 'ctrl+F pressed!'<CR>
-" nnoremap <C-S-F11> :echo 'ctrl+R pressed!'<CR>
-" map <Esc>[B <Down>
-" Leader
-nnoremap <Leader><BS>     :TrimTrailingWS<CR>
-nnoremap <leader>1        :SynStack<CR>
-nnoremap <leader>2        :set path+=**
-nnoremap <leader>.        yyp
-" FZF
-noremap <C-t> yiw :Ag<CR>
-noremap <C-p> yiw :FZF<CR>
-nnoremap <c-m> :Buffers<CR>
-nnoremap <leader>m :Marks<CR>
+    " Needed for tmux and vim to play nice with arrows
+    " if &term =~ '^screen'
+    "   execute "set <xUp>=\e[1;*A"
+    "   execute "set <xDown>=\e[1;*B"
+    "   execute "set <xRight>=\e[1;*C"
+    "   execute "set <xLeft>=\e[1;*D"
+    "   execute "set <F11>=\e[23;*~"
+    "   execute "set <F12>=\e[24;*~"
+    " endif
+    " nnoremap <C-S-F12> :echo 'ctrl+F pressed!'<CR>
+    " nnoremap <C-S-F11> :echo 'ctrl+R pressed!'<CR>
+    " map <Esc>[B <Down>
+    " Leader
+    nnoremap <Leader><BS>     :TrimTrailingWS<CR>
+    nnoremap <leader>1        :SynStack<CR>
+    nnoremap <leader>2        :set path+=**
+    nnoremap <leader>.        yyp
+    " FZF
+    nnoremap <C-t> yiw :Ag<CR>
+    nnoremap <C-p> yiw :FZF<CR>
+    nnoremap <c-q> :Buffers<CR>
+    inoremap <C-t> <Esc>yiw :Ag<CR>
+    inoremap <C-p> <Esc>yiw :FZF<CR>
+    inoremap <c-q> <Esc>yiw :Buffers<CR>
 
-" General
-nnoremap ;;s     :so $MYVIMRC<CR>
-nnoremap ;;v     :e  $MYVIMRC<CR>
-nnoremap q       :bp\|bd #<CR>
-nnoremap Q       :q<CR>
-nnoremap U        <C-r>
-nnoremap /       yiw/
-nnoremap gi      <C-]>
-nnoremap gp      <C-o>
-nnoremap gn      <C-i>
-nnoremap <Esc>   :noh<CR><Esc>
-nnoremap <Tab>   :bn<CR>
-nnoremap <S-Tab> :bp<CR>
-vnoremap <BS>    x
-vnoremap <Tab>   >gv
-vnoremap <S-Tab> <gv
-vnoremap <C-]>   >gv
-vnoremap <C-[>   <gv
-cnoremap W       w
-cnoremap Q       q
+    nnoremap <leader>m :Marks<CR>
 
-" Git
-nnoremap ;fc :Commits<CR>
-nnoremap ;fb :BCommits<CR>
-nnoremap ;ff  :GFiles?<CR>
-nnoremap ;s  :Gstatus<CR>
-nnoremap ;r  :Gread<CR>
-nnoremap ;r! :Gread!<CR>
-nnoremap ;w  :Gwrite<CR>
-nnoremap ;w! :Gwrite!<CR>
-nnoremap ;-  :Gremove<CR>
-nnoremap ;m  :Gmove<CR>
-nnoremap ;c  :Gcommit<CR>
-nnoremap ;b  :Gblame<CR>
-nnoremap ;l  :Gbrowse<CR>
-nnoremap ;e  :Gedit<Space>
-nnoremap ;v  :Gvsplit<Space>
-nnoremap ;df :Gdiff<CR>
-nnoremap ;du :diffupdate<CR>
-nmap     ;dg :diffget v:count <CR>;du
-nmap     ;dp :diffput v:count <CR>;du
-nnoremap ;o  [c
-nnoremap ;i  ]c
+    " General
+    nnoremap ;;s     :so $MYVIMRC<CR>
+    nnoremap ;;v     :e  $MYVIMRC<CR>
+    nnoremap q       :bp\|bd #<CR>
+    nnoremap Q       :q<CR>
+    nnoremap U        <C-r>
+    nnoremap /       yiw/
+    nnoremap gi      <C-]>
+    nnoremap gp      <C-o>
+    nnoremap gn      <C-i>
+    nnoremap <Esc>   :noh<CR><Esc>
+    nnoremap <Tab>   :bn<CR>
+    nnoremap <S-Tab> :bp<CR>
+    vnoremap <BS>    x
+    vnoremap <Tab>   >gv
+    vnoremap <S-Tab> <gv
+    vnoremap <C-]>   >gv
+    vnoremap <C-[>   <gv
+    cnoremap W       w
+    cnoremap Q       q
 
-
-" Align
-xmap #  <Plug>(EasyAlign)
-nmap #  <Plug>(EasyAlign)
-nmap ## #*<Space><CR>
-xmap ## #*<Space><CR>
+    " Git
+    nnoremap ;fc :Commits<CR>
+    nnoremap ;fb :BCommits<CR>
+    nnoremap ;ff  :GFiles?<CR>
+    nnoremap ;s  :Gstatus<CR>
+    nnoremap ;r  :Gread<CR>
+    nnoremap ;r! :Gread!<CR>
+    nnoremap ;w  :Gwrite<CR>
+    nnoremap ;w! :Gwrite!<CR>
+    nnoremap ;-  :Gremove<CR>
+    nnoremap ;m  :Gmove<CR>
+    nnoremap ;c  :Gcommit<CR>
+    nnoremap ;b  :Gblame<CR>
+    nnoremap ;l  :Gbrowse<CR>
+    nnoremap ;e  :Gedit<Space>
+    nnoremap ;v  :Gvsplit<Space>
+    nnoremap ;df :Gdiff<CR>
+    nnoremap ;du :diffupdate<CR>
+    nmap     ;dg :diffget v:count <CR>;du
+    nmap     ;dp :diffput v:count <CR>;du
+    nnoremap ;o  [c
+    nnoremap ;i  ]c
 
 
-" Useful Ctrl cmds
-nnoremap <C-c> yy<C-c>
-inoremap <C-c> <Esc>yy
-vnoremap <C-c> y
-nnoremap <C-x> dd
-inoremap <C-x> <Esc>dd
-vnoremap <C-x> di
-nnoremap <C-v> p^
-inoremap <C-v> <C-r>"
-inoremap <C-z> <Esc>ui
-" nnoremap <C-z> u
-nnoremap <C-s> :w<CR>
-inoremap <C-s> <Esc>:w<CR>a
-nnoremap <C-a> ggVG
-inoremap <C-a> <Esc>ggVG
-noremap <C-n> <Esc>:enew<CR>
-noremap <C-Space> <Esc>:vs<CR>
+    " Align
+    xmap #  <Plug>(EasyAlign)
+    nmap #  <Plug>(EasyAlign)
+    nmap ## #*<Space><CR>
+    xmap ## #*<Space><CR>
 
-" Visual Block is far more useful than Visual. Swap
-" nnoremap v         <C-v>
-" xnoremap v         <C-v>
-" nnoremap <C-v>     v
-" xnoremap <C-v>     v
 
-" Visual with shift
-nnoremap <S-Up>    V<Up>
-nnoremap <S-Down>  V<Down>
-nnoremap <S-Left>  <C-v><Left>
-nnoremap <S-Right> <C-v><Right>
-inoremap <S-Up>    <Esc><Right>V<Up>
-inoremap <S-Down>  <Esc><Right>V<Down>
-inoremap <S-Left>  <Esc><Right><C-v><Left>
-inoremap <S-Right> <Esc><Right><C-v><Right>
-vnoremap <S-Up>    <Up>
-vnoremap <S-Down>  <Down>
-vnoremap <S-Left>  <Left>
-vnoremap <S-Right> <Right>
-vnoremap <Up>    <Esc><Up>
-vnoremap <Down>  <Esc><Down>
-vnoremap <Left>  <Esc><Left>
-vnoremap <Right> <Esc><Right>
+    " Useful Ctrl cmds
+    nnoremap <C-c> yy<C-c>
+    inoremap <C-c> <Esc>yy
+    vnoremap <C-c> y
+    nnoremap <C-x> dd
+    inoremap <C-x> <Esc>dd
+    vnoremap <C-x> di
+    nnoremap <C-v> p^
+    inoremap <C-v> <C-r>"
+    vnoremap <C-v> "0P
+    inoremap <C-z> <Esc>ui
+    nnoremap <C-z> u
+    vnoremap <C-z> <Esc>ugv
+    nnoremap <C-s> :w<CR>
+    inoremap <C-s> <Esc>:w<CR>
+    vnoremap <C-s> <Esc>:w<CR>
+    nnoremap <C-a> ggVG
+    inoremap <C-a> <Esc>ggVG
+    noremap <C-n> <Esc>:enew<CR>
+    noremap <C-Space> <Esc>:vs<CR>
 
-" motion commands
-" usually after motion, you want insert mode on by def.
-nnoremap <M-Left> bi
-nnoremap <M-Right> ea
-inoremap <M-Left> <Esc>bi
-inoremap <M-Right> <Esc>ea
-nnoremap <C-Left> I
-nnoremap <C-Right> A
-inoremap <C-Left> <Esc>I
-inoremap <C-Right> <Esc>A
+    " Visual Block is far more useful than Visual. Swap
+    " nnoremap v         <C-v>
+    " xnoremap v         <C-v>
+    " nnoremap <C-v>     v
+    " xnoremap <C-v>     v
+
+    " Visual with shift
+    nnoremap <S-Up>    V<Up>
+    nnoremap <S-Down>  V<Down>
+    nnoremap <S-Left>  <C-v><Left>
+    nnoremap <S-Right> <C-v><Right>
+    inoremap <S-Up>    <Esc><Right>V<Up>
+    inoremap <S-Down>  <Esc><Right>V<Down>
+    inoremap <S-Left>  <Esc><Right><C-v><Left>
+    inoremap <S-Right> <Esc><Right><C-v><Right>
+    vnoremap <S-Up>    <Up>
+    vnoremap <S-Down>  <Down>
+    vnoremap <S-Left>  <Left>
+    vnoremap <S-Right> <Right>
+    vnoremap <Up>    <Esc><Up>
+    vnoremap <Down>  <Esc><Down>
+    vnoremap <Left>  <Esc><Left>
+    vnoremap <Right> <Esc><Right>
+
+    " motion commands
+    " usually after motion, you want insert mode on by def.
+    nnoremap <M-Left> bi
+    nnoremap <M-Right> ea
+    inoremap <M-Left> <Esc>bi
+    inoremap <M-Right> <Esc>ea
+    nnoremap <C-Left> I
+    nnoremap <C-Right> A
+    inoremap <C-Left> <Esc>I
+    inoremap <C-Right> <Esc>A
 
 " }}}
-
-" TODO {{{
-    " Helper
-
-    " set shell=/bin/bash
-    " set ttymouse=xterm2
-" }}}
-
-if exists("g:loaded_webdevicons")
-    call webdevicons#refresh()
-endif
-
 
