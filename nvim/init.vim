@@ -57,6 +57,9 @@ call plug#begin('~/.config/nvim/plugged')
     set visualbell
     set t_vb=
     set tm=500
+
+    " disable continuation of comments to the next line
+    set formatoptions-=ro
 " }}}
 
 " Appearance {{{
@@ -250,16 +253,6 @@ call plug#begin('~/.config/nvim/plugged')
     " set a map leader for more key combos
     let mapleader = ','
 
-    " remap esc
-    inoremap jj <esc>
-
-    " set paste toggle
-    set pastetoggle=<leader>v
-
-    " edit ~/.config/nvim/init.vim
-    nnoremap ;;s     :so $MYVIMRC<CR>
-    nnoremap ;;v     :e  $MYVIMRC<CR>
-
     " clear highlighted search
     noremap <space> :set hlsearch! hlsearch?<cr>
 
@@ -327,7 +320,7 @@ call plug#begin('~/.config/nvim/plugged')
         autocmd BufNewFile,BufRead  *   set encoding=utf-8
         autocmd BufNewFile,BufRead  *   endtry
         " exception for makefiles, keep tabs
-        autocmd FileType make setlocal ts=4 sts=4 sw=4 noexpandtab " make exception
+        autocmd FileType make setlocal ts=4 sts=4 sw=4 noexpandtab
         " automatically resize panes on resize
         autocmd VimResized * exe 'normal! \<c-w>='
         autocmd BufWritePost .vimrc,.vimrc.local,init.vim source %
@@ -342,8 +335,22 @@ call plug#begin('~/.config/nvim/plugged')
 " }}}
 
 " General Functionality {{{
-    " align => ga
-    Plug 'junegunn/vim-easy-align'
+
+    " Tab for insert mode completion {{{
+        Plug 'ervandew/supertab'
+
+        let g:SuperTabDefaultCompletionType = '<C-n>'
+        set completeopt=menu,longest    " Use the popup menu by default; only insert the longest common text of the completion matches; don't automatically show extra information in the preview window.
+    " }}}
+
+    " align => ga {{{
+        Plug 'junegunn/vim-easy-align'
+
+        nmap ga <Plug>(EasyAlign)
+        xmap ga <Plug>(EasyAlign)
+        xmap a  ga*<Space><CR>
+        xmap aa ga*<Space><CR>
+    " }}}
 
     " swap files handling
     Plug 'gioele/vim-autoswap'
@@ -375,8 +382,16 @@ call plug#begin('~/.config/nvim/plugged')
     " endings for html, xml, etc. - ehances surround
     Plug 'tpope/vim-ragtag'
 
-    " mappings to easily delete, change and add such surroundings in pairs, such as quotes, parens, etc.
-    Plug 'tpope/vim-surround'
+    " {{{ mappings to easily delete, change and add such surroundings in pairs, such as quotes, parens, etc.
+        Plug 'tpope/vim-surround'
+
+        vmap ' S'
+        vmap " S"
+        vmap { S{
+        vmap [ S[
+        vmap ( S(
+
+    " }}}
 
     " tmux integration for vim
     Plug 'benmills/vimux'
@@ -502,25 +517,19 @@ call plug#begin('~/.config/nvim/plugged')
 
         augroup nerdtree
             autocmd!
+            " Prevent Tab on NERDTree (breaks everything otherwise)
+            autocmd FileType nerdtree noremap <buffer> <Tab> <nop>
+            autocmd FileType nerdtree noremap <buffer> <S-Tab> <nop>
             autocmd FileType nerdtree nnoremap <buffer> q :NERDTreeToggle<CR>
             autocmd FileType nerdtree nnoremap <buffer> <Tab> <C-w><Right>:bn<CR>
+            autocmd FileType nerdtree nnoremap <buffer> <S-Tab> <C-w><Right>:bn<CR>
             autocmd FileType nerdtree setlocal nolist " turn off whitespace characters
             autocmd FileType nerdtree setlocal nocursorline " turn off line highlighting for performance
         augroup END
 
-        " Toggle NERDTree
-        function! ToggleNerdTree()
-            if @% != "" && @% !~ "Startify" && (!exists("g:NERDTree") || (g:NERDTree.ExistsForTab() && !g:NERDTree.IsOpen()))
-                :NERDTreeFind
-            else
-                :NERDTreeToggle
-            endif
-        endfunction
-        " toggle nerd tree
-        "  :call ToggleNerdTree() <CR>
         nmap <silent> <C-e> :NERDTreeToggle<cr>
         " find the current file in nerdtree without needing to reload the drawer
-        nmap <silent> <leader>y :NERDTreeFind<cr>
+        nmap <silent> <C-e><C-e> :NERDTreeFind<cr>
 
         let NERDTreeShowHidden=1
         " let NERDTreeDirArrowExpandable = '▷'
@@ -547,18 +556,24 @@ call plug#begin('~/.config/nvim/plugged')
         if isdirectory(".git")
             " if in a git project, use :GFiles
             nmap <silent> <leader>t :GitFiles --cached --others --exclude-standard<cr>
+            nnoremap <C-p> yiw :GitFiles --cached --others --exclude-standard<cr>
+            inoremap <C-p> <Esc>yiw :GitFiles --cached --others --exclude-standard<cr>
         else
             " otherwise, use :FZF
-            nmap <silent> <leader>t :FZF<cr>
+            nnoremap <C-p> yiw :FZF<CR>
+            inoremap <C-p> <Esc>yiw :FZF<CR>
         endif
 
-        nmap <silent> <leader>s :GFiles?<cr>
+        nnoremap <C-t> yiw :Ag<CR>
+        inoremap <C-t> <Esc>yiw :Ag<CR>
+        nnoremap <c-q> :Buffers<CR>
+        inoremap <c-q> <Esc>yiw :Buffers<CR>
 
-        nmap <silent> <leader>r :Buffers<cr>
-        nmap <silent> <leader>e :FZF<cr>
-        nmap <leader><tab> <plug>(fzf-maps-n)
-        xmap <leader><tab> <plug>(fzf-maps-x)
-        omap <leader><tab> <plug>(fzf-maps-o)
+        nnoremap <leader>m :Marks<CR>
+
+        nmap <C-m> <plug>(fzf-maps-n)
+        xmap <C-m> <plug>(fzf-maps-x)
+        omap <C-m> <plug>(fzf-maps-o)
 
         " Insert mode completion
         imap <c-x><c-k> <plug>(fzf-complete-word)
@@ -606,10 +621,29 @@ call plug#begin('~/.config/nvim/plugged')
         Plug 'junegunn/gv.vim'
         Plug 'sodapopcan/vim-twiggy'
         Plug 'christoomey/vim-conflicted'
-        nmap <silent> <leader>gs :Gstatus<cr>
-        nmap <leader>ge :Gedit<cr>
-        nmap <silent><leader>gr :Gread<cr>
-        nmap <silent><leader>gb :Gblame<cr>
+
+        " Git
+        nnoremap ;fc :Commits<CR>
+        nnoremap ;fb :BCommits<CR>
+        nnoremap ;ff :GFiles?<CR>
+        nnoremap ;s  :Gstatus<CR>
+        nnoremap ;r  :Gread<CR>
+        nnoremap ;r! :Gread!<CR>
+        nnoremap ;w  :Gwrite<CR>
+        nnoremap ;w! :Gwrite!<CR>
+        nnoremap ;-  :Gremove<CR>
+        nnoremap ;m  :Gmove<CR>
+        nnoremap ;c  :Gcommit<CR>
+        nnoremap ;b  :Gblame<CR>
+        nnoremap ;l  :Gbrowse<CR>
+        nnoremap ;e  :Gedit<Space>
+        nnoremap ;v  :Gvsplit<Space>
+        nnoremap ;df :Gdiff<CR>
+        nnoremap ;du :diffupdate<CR>
+        nmap     ;dg :diffget v:count <CR>;du
+        nmap     ;dp :diffput v:count <CR>;du
+        nnoremap ;o  [c
+        nnoremap ;i  ]c
     " }}}
 
     " ALE {{{
@@ -643,6 +677,8 @@ call plug#begin('~/.config/nvim/plugged')
     " UltiSnips {{{
         Plug 'SirVer/ultisnips' " Snippets plugin
         let g:UltiSnipsExpandTrigger="<tab>"
+        let g:UltiSnipsJumpForwardTrigger = "<tab>"
+        let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
     " }}}
 
     " Schelpp for VM move {{{
@@ -804,37 +840,21 @@ call plug#end()
     endif
 " }}}
 
-" {{{
-    " Needed for tmux and vim to play nice with arrows
-    " if &term =~ '^screen'
-    "   execute "set <xUp>=\e[1;*A"
-    "   execute "set <xDown>=\e[1;*B"
-    "   execute "set <xRight>=\e[1;*C"
-    "   execute "set <xLeft>=\e[1;*D"
-    "   execute "set <F11>=\e[23;*~"
-    "   execute "set <F12>=\e[24;*~"
-    " endif
-    " nnoremap <C-S-F12> :echo 'ctrl+F pressed!'<CR>
-    " nnoremap <C-S-F11> :echo 'ctrl+R pressed!'<CR>
-    " map <Esc>[B <Down>
+" General maps {{{
     " Leader
     nnoremap <Leader><BS>     :TrimTrailingWS<CR>
     nnoremap <leader>1        :SynStack<CR>
     nnoremap <leader>2        :set path+=**
     nnoremap <leader>.        yyp
-    " FZF
-    nnoremap <C-t> yiw :Ag<CR>
-    nnoremap <C-p> yiw :FZF<CR>
-    nnoremap <c-q> :Buffers<CR>
-    inoremap <C-t> <Esc>yiw :Ag<CR>
-    inoremap <C-p> <Esc>yiw :FZF<CR>
-    inoremap <c-q> <Esc>yiw :Buffers<CR>
 
-    nnoremap <leader>m :Marks<CR>
+    " remap esc
+    inoremap jj <esc>
 
     " General
     nnoremap ;;s     :so $MYVIMRC<CR>
+    nnoremap ;;m     :e ~/.config/Makefile<CR>
     nnoremap ;;v     :e  $MYVIMRC<CR>
+    nnoremap ;;t     :e  ~/.tmux.conf<CR>
     nnoremap q       :bp\|bd #<CR>
     nnoremap Q       :q<CR>
     nnoremap U        <C-r>
@@ -848,41 +868,8 @@ call plug#end()
     vnoremap <BS>    x
     vnoremap <Tab>   >gv
     vnoremap <S-Tab> <gv
-    vnoremap <C-]>   >gv
-    vnoremap <C-[>   <gv
     cnoremap W       w
     cnoremap Q       q
-
-    " Git
-    nnoremap ;fc :Commits<CR>
-    nnoremap ;fb :BCommits<CR>
-    nnoremap ;ff  :GFiles?<CR>
-    nnoremap ;s  :Gstatus<CR>
-    nnoremap ;r  :Gread<CR>
-    nnoremap ;r! :Gread!<CR>
-    nnoremap ;w  :Gwrite<CR>
-    nnoremap ;w! :Gwrite!<CR>
-    nnoremap ;-  :Gremove<CR>
-    nnoremap ;m  :Gmove<CR>
-    nnoremap ;c  :Gcommit<CR>
-    nnoremap ;b  :Gblame<CR>
-    nnoremap ;l  :Gbrowse<CR>
-    nnoremap ;e  :Gedit<Space>
-    nnoremap ;v  :Gvsplit<Space>
-    nnoremap ;df :Gdiff<CR>
-    nnoremap ;du :diffupdate<CR>
-    nmap     ;dg :diffget v:count <CR>;du
-    nmap     ;dp :diffput v:count <CR>;du
-    nnoremap ;o  [c
-    nnoremap ;i  ]c
-
-
-    " Align
-    xmap #  <Plug>(EasyAlign)
-    nmap #  <Plug>(EasyAlign)
-    nmap ## #*<Space><CR>
-    xmap ## #*<Space><CR>
-
 
     " Useful Ctrl cmds
     nnoremap <C-c> yy<C-c>
@@ -890,9 +877,9 @@ call plug#end()
     vnoremap <C-c> y
     nnoremap <C-x> dd
     inoremap <C-x> <Esc>dd
-    vnoremap <C-x> di
+    vnoremap <C-x> d
     nnoremap <C-v> p^
-    inoremap <C-v> <C-r>"
+    inoremap <C-v> <C-r>"<Esc>`[V`]=
     vnoremap <C-v> "0P
     inoremap <C-z> <Esc>ui
     nnoremap <C-z> u
@@ -902,14 +889,12 @@ call plug#end()
     vnoremap <C-s> <Esc>:w<CR>
     nnoremap <C-a> ggVG
     inoremap <C-a> <Esc>ggVG
-    noremap <C-n> <Esc>:enew<CR>
+    noremap <C-n> :e %:h/
     noremap <C-Space> <Esc>:vs<CR>
-
-    " Visual Block is far more useful than Visual. Swap
-    " nnoremap v         <C-v>
-    " xnoremap v         <C-v>
-    " nnoremap <C-v>     v
-    " xnoremap <C-v>     v
+    nnoremap <C-f> yiw:Grep<Space><C-r>0
+    inoremap <C-f> <Esc>yiw:Grep<Space><C-r>0
+    nnoremap <C-h> yiw:Replace<Space><C-r>0<Space>
+    inoremap <C-h> <Esc>yiw:Replace<Space><C-r>0<Space>
 
     " Visual with shift
     nnoremap <S-Up>    V<Up>
@@ -930,7 +915,6 @@ call plug#end()
     vnoremap <Right> <Esc><Right>
 
     " motion commands
-    " usually after motion, you want insert mode on by def.
     nnoremap <M-Left> bi
     nnoremap <M-Right> ea
     inoremap <M-Left> <Esc>bi
