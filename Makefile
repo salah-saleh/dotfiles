@@ -6,14 +6,17 @@ UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
 
 main: install/other install/stackdriver install/tmux config/git install/py install/nerdfonts \
-	install/fzf install/nvim install/docker install/compose
+	install/fzf install/nvim install/docker install/compose config/docker
+install/dev:
+	-cd ~ && git clone git@github.com:bernstein-io/lightdev.git
+	cd ~/lightdev && make
 monitor:
 	chmod u+x monitor.sh
 	sudo cp monitor.sh /usr/local/bin/
 	sudo cp monitor.service /etc/systemd/system/
 	sudo systemctl start monitor
 install/other:
-	sudo apt-get install -y mailutils
+	sudo apt-get install -y mailutils ruby-full
 install/light-dev:
 	cd ~ && git clone git@github.com:bernstein-io/lightdev.git
 install/stackdriver:
@@ -63,6 +66,10 @@ install/docker:
 install/compose:
 	sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(shell uname -s)-$(shell uname -m)" -o /usr/local/bin/docker-compose
 	sudo chmod +x /usr/local/bin/docker-compose
+config/docker:
+	-sudo groupadd docker
+	sudo usermod -aG docker $(USER)
+	sudo systemctl restart docker
 config/git:
 	git config --global user.email "salah@bernstein.io"
 	git config --global user.name "Salah Saleh"
