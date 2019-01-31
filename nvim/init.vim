@@ -528,8 +528,10 @@ call plug#begin('~/.config/nvim/plugged')
         augroup END
 
         nmap <silent> <C-e> :NERDTreeToggle<cr>
+        imap <silent> <C-e> <Esc>:NERDTreeToggle<cr>
         " find the current file in nerdtree without needing to reload the drawer
         nmap <silent> <C-e><C-e> :NERDTreeFind<cr>
+        imap <silent> <C-e><C-e> <Esc>:NERDTreeFind<cr>
 
         let NERDTreeShowHidden=1
         " let NERDTreeDirArrowExpandable = '▷'
@@ -553,16 +555,15 @@ call plug#begin('~/.config/nvim/plugged')
         Plug 'junegunn/fzf.vim'
         let g:fzf_layout = { 'down': '~25%' }
 
-        if isdirectory(".git")
-            " if in a git project, use :GFiles
-            nmap <silent> <leader>t :GitFiles --cached --others --exclude-standard<cr>
-            nnoremap <C-p> yiw :GitFiles --cached --others --exclude-standard<cr>
-            inoremap <C-p> <Esc>yiw :GitFiles --cached --others --exclude-standard<cr>
-        else
+        " if isdirectory(".git")
+        "     " if in a git project, use :GFiles
+        "     nnoremap <C-p> yiw :GitFiles --cached --others --exclude-standard<cr>
+        "     inoremap <C-p> <Esc>yiw :GitFiles --cached --others --exclude-standard<cr>
+        " else
             " otherwise, use :FZF
             nnoremap <C-p> yiw :FZF<CR>
             inoremap <C-p> <Esc>yiw :FZF<CR>
-        endif
+        " endif
 
         nnoremap <C-t> yiw :Ag<CR>
         inoremap <C-t> <Esc>yiw :Ag<CR>
@@ -571,15 +572,18 @@ call plug#begin('~/.config/nvim/plugged')
 
         nnoremap <leader>m :Marks<CR>
 
-        nmap <C-m> <plug>(fzf-maps-n)
-        xmap <C-m> <plug>(fzf-maps-x)
-        omap <C-m> <plug>(fzf-maps-o)
+        " nmap <C-m> <plug>(fzf-maps-n)
+        " xmap <C-m> <plug>(fzf-maps-x)
+        " omap <C-m> <plug>(fzf-maps-o)
 
         " Insert mode completion
         imap <c-x><c-k> <plug>(fzf-complete-word)
         imap <c-x><c-f> <plug>(fzf-complete-path)
         imap <c-x><c-j> <plug>(fzf-complete-file-ag)
         imap <c-x><c-l> <plug>(fzf-complete-line)
+
+        let g:fzf_action = {
+            \ 'ctrl-d': 'bdelete' }
 
         nnoremap <silent> <Leader>C :call fzf#run({
         \   'source':
@@ -895,6 +899,10 @@ call plug#end()
     inoremap <C-f> <Esc>yiw:Grep<Space><C-r>0
     nnoremap <C-h> yiw:Replace<Space><C-r>0<Space>
     inoremap <C-h> <Esc>yiw:Replace<Space><C-r>0<Space>
+    nnoremap ø o<Esc>
+    nnoremap Ø O<Esc>
+    inoremap ø <Esc>o
+    inoremap Ø <Esc>O
 
     " Visual with shift
     nnoremap <S-Up>    V<Up>
