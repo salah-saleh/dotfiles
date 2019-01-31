@@ -1,0 +1,12 @@
+[Unit]
+Description=Monito and Kill a Process if above 50 percent
+
+[Service]
+ExecStart=/usr/local/bin/monitor.sh
+
+# Restart in any case (restart should have delay, w/o this systemd could block next restart!)
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

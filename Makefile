@@ -4,7 +4,29 @@ UNAME := $(shell uname)
 .PHONY: main
 
 ifeq ($(UNAME), Linux)
-main: config/git install/py install/nerdfonts install/fzf install/nvim install/docker install/compose
+
+main: install/other install/stackdriver install/tmux config/git install/py install/nerdfonts \
+	install/fzf install/nvim install/docker install/compose
+monitor:
+	chmod u+x monitor.sh
+	sudo cp monitor.sh /usr/local/bin/
+	sudo cp monitor.service /etc/systemd/system/
+	sudo systemctl start monitor
+install/other:
+	sudo apt-get install -y mailutils
+install/light-dev:
+	cd ~ && git clone git@github.com:bernstein-io/lightdev.git
+install/stackdriver:
+	curl -sSO https://dl.google.com/cloudagents/install-monitoring-agent.sh
+	sudo bash install-monitoring-agent.sh
+	curl -sSO https://dl.google.com/cloudagents/install-logging-agent.sh
+	sudo bash install-logging-agent.sh
+	rm install-logging-agent.sh
+	rm install-monitoring-agent.sh
+install/tmux:
+	sudo apt-get install -y tmux
+	tmux new -s main -d
+	ln -s .config/.tmux.conf ~/.tmux.config
 install/nvim:
 	sudo apt-get install fuse libfuse2 git python3-pip ack-grep -y
 	wget --quiet https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output-document nvima
@@ -44,9 +66,18 @@ install/compose:
 config/git:
 	git config --global user.email "salah@bernstein.io"
 	git config --global user.name "Salah Saleh"
+	git config --global pull.rebase true
+	git config --global pull.rebase true
+	git config --global core.ignorecase false
+	git config --global push.followTags true
+	git config --global push.default current
+	git config --global alias.lg "log --graph --abbrev-commit --oneline --decorate --format=format:'%C(bold blue)%h%C(reset) %C(bold green)%ar%C(reset)%C(auto)%d%C(reset) %C(white)%s%C(reset)%C(dim white) %an%C(reset)' --all"
+
 else
+
 install/nvim:
 	brew install neovim
 install/fzf:
 	brew install fzf
+
 endif
