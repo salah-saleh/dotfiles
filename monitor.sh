@@ -9,11 +9,11 @@ while true; do
   TOPPID=$(echo "$TOPPROCESS" | awk '{print $1}')
   TOPNAME=$(echo "$TOPPROCESS" | awk '{print $12}')
   TOPCPU=$(echo "$TOPPROCESS" | awk '{print $9}')
-  if [ "$TOPNAME" != "Xorg" ] && [ $(echo "$TOPCPU > 50" | bc) -ne 0 ]
+  if [ "$TOPNAME" != "Xorg" ] && [ $(echo "$TOPCPU > 80" | bc) -ne 0 ]
   then
     echo "$TOPPROCESS" >> /danger-process.txt
     pstree $TOPPID >> /danger-process.txt
-    sudo kill -9 $TOPPID
+    echo "-----------------------------------------------" >> danger-process/txt
   fi
 done
 

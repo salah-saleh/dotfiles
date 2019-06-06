@@ -6,7 +6,8 @@ UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
 
 main: install/other install/stackdriver install/tmux config/git install/py install/nerdfonts \
-	install/fzf install/nvim install/docker install/compose config/docker
+	install/fzf install/nvim install/docker install/compose config/docker install/heroku \
+	install/postgresql
 install/dev:
 	-cd ~ && git clone git@github.com:bernstein-io/lightdev.git
 	cd ~/lightdev && make
@@ -17,6 +18,10 @@ monitor:
 	sudo systemctl start monitor
 install/other:
 	sudo apt-get install -y mailutils ruby-full
+install/heroku:
+	curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+install/postgresql:
+	sudo apt-get install postgresql
 install/light-dev:
 	cd ~ && git clone git@github.com:bernstein-io/lightdev.git
 install/stackdriver:
@@ -47,6 +52,7 @@ install/nerdfonts:
 install/fzf:
 	cd ~ && git clone --depth 1 https://github.com/junegunn/fzf.git
 	~/fzf/install
+	sudo apt-get install silversearcher-ag
 install/docker:
 	sudo apt-get remove docker docker-engine docker.io
 	sudo apt-get update
