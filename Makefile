@@ -85,6 +85,7 @@ config/git:
 	git config --global push.followTags true
 	git config --global push.default current
 	git config --global alias.lg "log --graph --abbrev-commit --oneline --decorate --format=format:'%C(bold blue)%h%C(reset) %C(bold green)%ar%C(reset)%C(auto)%d%C(reset) %C(white)%s%C(reset)%C(dim white) %an%C(reset)' --all"
+	git config --global core.editor "nvim"
 
 else
 

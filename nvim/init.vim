@@ -886,6 +886,7 @@ call plug#end()
     inoremap <C-v> <C-r>"<Esc>`[V`]=
     vnoremap <C-v> "0P
     inoremap <C-z> <Esc>ui
+    cnoremap <C-z> <Esc><C-z>
     nnoremap <C-z> u
     vnoremap <C-z> <Esc>ugv
     nnoremap <C-s> :w<CR>
