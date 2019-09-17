@@ -91,6 +91,8 @@ else
 
 install/nvim:
 	brew install neovim
+	brew tap caskroom/fonts
+	brew cask install font-hack-nerd-font
 install/fzf:
 	brew install fzf
 
