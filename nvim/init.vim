@@ -65,8 +65,8 @@ call plug#begin('~/.config/nvim/plugged')
 " Appearance {{{
     set ruler " show col,line
     set number " show line numbers
-    set textwidth=80 " break line at 8-
-    let &colorcolumn="80"
+    " set textwidth=100 " break line at 100
+    let &colorcolumn="100"
     set wrap " turn on line wrapping, doesn't affect buffer
     set wrapmargin=8 " wrap lines when coming within n characters from side
     set linebreak " set soft wrapping, doesn't affect buffer
@@ -895,7 +895,7 @@ call plug#end()
     nnoremap <C-a> ggVG
     inoremap <C-a> <Esc>ggVG
     noremap <C-n> :e %:h/
-    noremap <C-Space> <Esc>:vs<CR>
+    noremap <C-Space> <Esc>:vs<CR><C-w><C-w>:Buffers<CR>
     nnoremap <C-f> yiw:Grep<Space><C-r>0
     inoremap <C-f> <Esc>yiw:Grep<Space><C-r>0
     nnoremap <C-h> yiw:Replace<Space><C-r>0<Space>
