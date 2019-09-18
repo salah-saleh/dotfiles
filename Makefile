@@ -90,7 +90,8 @@ config/git:
 else
 
 install/nvim:
-	brew install neovim
+	brew install neovim python3
+	pip3 install --user neovim
 	brew tap caskroom/fonts
 	brew cask install font-hack-nerd-font
 install/fzf:
